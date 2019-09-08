@@ -20,7 +20,7 @@ app.post('/students', function (req, res) {
             res.json(err)
         }
         else {
-            students=JSON.parse(data)
+            students = JSON.parse(data)
             const _id = Date.now()
             Object.assign(student, { _id })
             students.push(student)
@@ -36,20 +36,20 @@ app.post('/students', function (req, res) {
 
 app.put('/students/:id', function (req, res) {
     const id = req.params.id
-    const student = req.body
+
     fs.readFile(jsonFile, encode, function (err, data) {
         if (err) {
             res.json(err)
         }
         else {
-            const students = [JSON.parse(data)]
+            const students = JSON.parse(data)
             console.log(students)
             const studentData = students.find((student) => {
                 return student._id === Number(id)
             })
             if (studentData) {
-                Object.assign(studentData, student)
-                fs.writeFile(jsonFile, JSON.stringify(studentData), function (err) {
+                Object.assign(studentData, req.body)
+                fs.writeFile(jsonFile, JSON.stringify(students), function (err) {
                     if (err) {
                         res.json({ err })
                     }
@@ -61,9 +61,35 @@ app.put('/students/:id', function (req, res) {
         }
     })
 })
+
 app.delete('/students/:id', function (req, res) {
     const id = req.params.id
-    const student = req.body
+    fs.readFile(jsonFile, encode, function (err, data) {
+        if (err) {
+            res.json(err)
+        }
+        else {
+            let students = JSON.parse(data)
+            console.log(students)
+            const studentData = students.find((student) => {
+                return student._id === Number(id)
+            })
+            students = students.filter((student) => {
+                return student._id !== Number(id)
+            })
+            if (studentData) {
+                Object.assign(studentData, req.body)
+                fs.writeFile(jsonFile, JSON.stringify(students), function (err) {
+                    if (err) {
+                        res.json({ err })
+                    }
+                    else {
+                        res.json({ notice: 'Data has been deleted', students })
+                    }
+                })
+            }
+        }
+    })
 })
 
 app.listen(PORT, () => { console.log(`listening to ${PORT}`) })
