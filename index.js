@@ -13,13 +13,14 @@ app.get('/students', function (req, res) {
     })
 })
 app.post('/students', function (req, res) {
-    const students = []
+    let students = []
+    let student = req.body
     fs.readFile(jsonFile, encode, function (err, data) {
         if (err) {
             res.json(err)
         }
         else {
-            const student = req.body
+            students=JSON.parse(data)
             const _id = Date.now()
             Object.assign(student, { _id })
             students.push(student)
@@ -59,6 +60,10 @@ app.put('/students/:id', function (req, res) {
             }
         }
     })
+})
+app.delete('/students/:id', function (req, res) {
+    const id = req.params.id
+    const student = req.body
 })
 
 app.listen(PORT, () => { console.log(`listening to ${PORT}`) })
